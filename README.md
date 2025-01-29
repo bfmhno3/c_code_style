@@ -399,3 +399,78 @@ void vMyFunc(void) {
 }
 ```
 
+## 函数
+
++ 如果函数需要在外部调用，则其配套的头文件应包含其**函数原型**（*Function Prototype*）。
++ 常规函数使用大小写混合，取值和设值函数则要求与变量名相匹配，同样不包含下划线。对于使用首字母缩写的短语，更倾向于将它们视为一个单词即首字母大写。
++ 函数应使用定义的前缀标识其返回值类型。
+
+```C
+/* 正确 */
+void           vMyFunc(void);
+static uint8_t prvMyFunc(void);
+
+void           MyFunc(void);    /* 错误，未使用前缀 */
+static uint8_t ucMyFunc(void);  /* 错误，应使用 prv */
+void           vMYFunc(void);   /* 错误，只有每个单词的首字母应该大写 */
+void           myFunc(void);    /* 错误 */
+void           my_func(void);   /* 错误 */
+```
+
++ 对于具有相同或相似功能（例如提供对变量的读写操作）的函数原型，对齐函数名，以提高可读性。
+
+```C
+/* 正确 */
+void     vSet(int32_t a);
+MyType_t xGet(void);
+MyPtr_t* xpGetPtr(void);
+
+/* 错误 */
+void vSet(int32_t a);
+const char* cpGet(void);
+```
+
++ 函数返回值类型应该与函数名在同一行。
+
+```C
+/* 错误 */
+int32_t
+lFoo(void) {
+    return 0;
+}
+
+/* 错误 */
+static const char*
+prvGetString(void) {
+    return "Hello World!\r\n";
+}
+
+/* 正确 */
+int32_t lFoo(void) {
+    return 0;
+}
+```
+
+### 前缀命名规则
+
+1. 私有函数（使用 `static` 声明的函数）：使用 `prv` 为前缀。私有函数只使用 `prv` 为前缀，不使用其余前缀标识其返回值类型。
+2. 基础数据类型
+   + 无符号类型（`unsigned`）以 `u` 开头：
+     + `uc`：`unsigned char` / `uint8_t`
+     + `us`：`unsigned short` / `uint16_t`
+     + `ul`：`unsigned long` / `uint32_t`
+     + `ull`：`unsigned long long` / `uint64_t`
+   + 有符号类型（默认）：
+     + 若不使用 `u` 作为前缀，则默认为有符号类型
+     + 其余类型的前缀付下：
+       + `b`：`bool`
+       + `f`：`float`
+       + `d`：`double`
+3. 复合类型
+   + `x`：自定义结构体（`struct`）
+   + `e`：自定义枚举类型（`enum`）
+4. 特殊类型
+   + `v`：`void`
+   + `p`：指针类型（可与其他前缀组合）：
+     + `vp`：`void *`
+     + `ulp`：`unsigned long *`
