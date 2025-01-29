@@ -973,3 +973,109 @@ if (a) {
 #endif /* !defined(XYZ) */
 ```
 
+## 代码文档
+
+编写有注释的代码可以让 Doxygen 解析并生成 HTML、PDF、$\LaTeX$ 输出，因此在项目初期正确地完成这项工作非常重要。
+
++ 对变量、函数、结构体和枚举使用支持 Doxygen 的文档风格
++ 始终使用 `@` 符号用于doxygen，不要使用 `\`
++ 文本始终从行首偏移 5x4 个空格（5 个制表符）
+
+```C
+/**
+ * @brief           Holds pointer to first entry in linked list
+ *                  Beginning of this text is 5 tabs (20 spaces) from beginning of line
+ */
+static type_t* list;
+```
+
++ 结构体和枚举的每个成员都需要包含文档。
++ 将不同结构体或枚举的文档对齐。
+
+```C
+/**
+ * @brief           This is point struct
+ * @note            This structure is used to calculate all point
+ *                      related stuff
+ */
+typedef struct {
+    int32_t x;                                  /*!< Point X coordinate */
+    int32_t y;                                  /*!< Point Y coordinate */
+    int32_t size;                               /*!< Point size.
+                                                    Since comment is very big,
+                                                    you may go to next line */
+} Point_t;
+
+/**
+ * @brief           Point color enumeration
+ */
+typedef enum {
+    COLOR_RED,                                  /*!< Red color */
+    COLOR_GREEN,                                /*!< Green color */
+    COLOR_BLUE,                                 /*!< Blue color */
+} PointColor_t;
+```
+
++ 函数的注释必须写在源文件 `.c` 中。
++ 函数注释必须包括简介和所有参数的注释。
++ 每个参数都必须标记 `in` 或 `out` 用来表示它是否是输出参数。
++ 函数必须包含对返回值的注释，但 `void` 不必。
++ 函数可以包含其他 Doxygen 的关键字，例如 `note` 或 `warning`
++ 在参数名和描述之间使用冒号 `:`。
+
+```C
+/**
+ * @brief           Sum `2` numbers
+ * @param[in]       a: First number
+ * @param[in]       b: Second number
+ * @return          Sum of input values
+ */
+int32_t lSum(int32_t a, int32_t b) {
+    return a + b;
+}
+
+/**
+ * @brief           Sum `2` numbers and write it to pointer
+ * @note            This function does not return value, it stores it to pointer instead
+ * @param[in]       a: First number
+ * @param[in]       b: Second number
+ * @param[out]      result: Output variable used to save result
+ */
+void vSum(int32_t a, int32_t b, int32_t* result) {
+    *result = a + b;
+}
+```
+
++ 如果函数返回了枚举的成员，使用 `ref` 来指定是哪一个枚举。
+
+```C
+/**
+ * @brief           My enumeration
+ */
+typedef enum {
+    MY_ERR,                                     /*!< Error value */
+    MY_OK                                       /*!< OK value */
+} MyEnum_t;
+
+/**
+ * @brief           Check some value
+ * @return          @ref MY_OK on success, member of @ref my_enum_t otherwise
+ */
+MyEnum_t eCheckValue(void) {
+    return MY_OK;
+}
+```
+
++ 对于常量和数字使用特殊标记。
+
+```C
+// 使用 `` 标记常量和数字
+/**
+ * @brief           Get data from input array
+ * @param[in]       in: Input data
+ * @return          Pointer to output data on success, `NULL` otherwise
+ */
+const void * vpGetData(const void* in) {
+    return in;
+}
+```
