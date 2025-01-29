@@ -582,3 +582,165 @@ typedef enum Week { // 没有 _t 后缀
 typedef uint8_t (*MyFuncTypedef_pt)(uint8_t p1, const char* p2);
 ```
 
+## 复合语句
+
++ 每个复合语句都必须包含一对完整的花括号 `{}`，即使它只包含 1 条嵌套语句。
++ 在复合语句中嵌套其余语句时，必须缩进，每一层 `4` 个空格。
+
+```C
+/* 正确 */
+if (c) {
+    DoA();
+} else {
+    DoB();
+}
+
+/* 错误 */
+if (c)
+    DoA();
+else
+    DoB();
+
+/* 错误 */
+if (c) DoA();
+else DoB();
+```
+
++ 当使用 `if-else` 语句时，`else` 必须和右花括号 `}` 在同一行中。
+
+```C
+/* 正确 */
+if (a) {
+    
+} else if (b) {
+    
+} else {
+    
+}
+
+/* 错误 */
+if (a) {
+    
+}
+else {
+    
+}
+
+/* 错误 */
+if (a) {
+    
+}
+else
+{
+    
+}
+```
+
++ 对于 `do-while` 语句，`while` 必须和右花括号 `}` 在同一行，左花括号 `{` 必须和 `do` 在同一行。
+
+```C
+/* 正确 */
+do {
+    int32_t a;
+    a = DoA();
+    DoB(a);
+} while (check());
+
+/* 错误 */
+do
+{
+/* ... */
+} while (check());
+
+/* 错误 */
+do {
+/* ... */
+}
+while (check());
+```
+
++ 每个左花括号都需要缩进。
+
+```C
+if (a) {
+    DoA();
+} else {
+    DoB();
+    if (c) {
+        DoC();
+    }
+}
+```
+
++ 空循环（`for`、`while`、`do-while`）必须包含一对完整的花括号。
+
+```C
+/* 正确 */
+while (IsRegisterBitSet()) {}
+
+/* 错误 */
+while (IsRegisterBitSet());
+while (IsRegisterBitSet()) { }
+while (IsRegisterBitSet()) {
+}
+```
+
++ 空循环应使用一对空的花括号，并将其与关键字放在一行中。‘
+
+```C
+/* 等待嵌入式硬件单元中的位被设置 */
+volatile uint32_t* add = HW_PERIPH_REGISTER_ADDR;
+
+/* 等待第 13 位被设置 */
+while (*addr & (1 << 13)) {}        /* 正确 */
+while (*addr & (1 << 13)) { }       /* 正确 */
+while (*addr & (1 << 13)) {         /* 正确 */
+    
+}
+while (*addr & (1 << 13));           /* 错误 */
+```
+
++ 按一下顺序使用循环：`for`、`do-while`、`while`。
++ 尽量避免在循环体内增加变量。
+
+```C
+/* 不推荐 */
+int32_t a = 0;
+while (a < 10) {
+    .
+    ..
+    ...
+    ++a;
+}
+
+/* 推荐 */
+for (size_t a = 0; a < 10; ++a) {
+    
+}
+
+/* 推荐 */
+for (size_t a = 0; a < 10; ) {
+    if (...) {
+        ++a;
+    }
+}
+```
+
++ 只在需要赋值或传参时使用三目运算符 `?`，禁止使用三目运算符进行函数调用，应该使用 `if` 语句。
+
+```C
+/* 正确 */
+int a = condition ? if_yes : if_no;       /* 赋值 */
+FuncCall(condition ? if_yes : if_no);     /* 函数传参 */
+switch (condition ? if_yes : if_no) {...} /* 类似函数传参 */
+
+/* 错误，这段代码难以维护 */
+condition ? CallToFunctionA() : CallToFunctionB();
+
+/* 应该使用 if 语句 */
+if (condition) {
+    CallToFunctionA();
+} else {
+    CallToFunctionB();
+}
+```
