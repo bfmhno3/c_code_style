@@ -822,3 +822,154 @@ switch (a) {
 }
 ```
 
+## 宏
+
++ 对于字面常量，始终使用宏，特别是数字。
++ 所有的宏应该使用全大写，并使用 `_` 分隔单词。
+
+```C
+/* 正确 */
+#define SQUARE(x) ((x) * (x))
+
+/* 错误 */
+#define square(x) ((x) * (x))
+```
+
++ 始终使用小括号 `()` 保护输入参数。
+
+```C
+/* 正确 */
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
+
+/* 错误 */
+#define MIN(x, y)  x < y ? x : y
+```
+
++ 始终使用小括号 `()` 保护宏的值
+
+```C
+/* 错误 */
+#define MIN(x, y) (x) < (y) ? (x) : (y)
+#define SUM(X, y) (x) + (y)
+
+/* 正确 */
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
+#define SUM(x, y) ((x) + (y))
+```
+
++ 如果宏有多行，应该使用 `do {} while (0)` 语句进行保护
+
+```C
+typedef struct {
+    int32_t px, py;
+} Point_t;
+Point_t p;                  /* 定义新的 Point 类 */
+
+/* 错误的实现 */
+
+/* 定义宏来设置 Point 的值 */
+#define SET_POINT(p, x, y)  (p)->px = (x); (p)->py = (y)
+
+SET_POINT(&p, 3, 4);        /* 将 Point 的位置设置为 (3, 4)，这将被预处理器转换为 */
+(&p)->px = (3); (&p)->py = (4); /* 这个样子。在这个简单的例子中，不会有任何问题 */
+
+/* 考虑下面这段丑陋的代码，虽然它在 C 中是有效的（不推荐） */
+if (a)                      /* 如果 a 为真 */
+    if (b)                  /* 如果 b 为真 */
+        SET_POINT(&p, 3, 4);/* Set point to x = 3, y = 4 */
+    else
+        SET_POINT(&p, 5, 6);/* Set point to x = 5, y = 6 */
+
+/* 上面的代码将被预处理器转换为下面的代码。你能发现问题吗？ */
+if (a)
+    if (b)
+        (&p)->px = (3); (&p)->py = (4);
+    else
+        (&p)->px = (5); (&p)->py = (6);
+
+/* 我们可以稍微重写一下上面的代码 */
+if (a)
+    if (b)
+        (&p)->px = (3);
+        (&p)->py = (4);
+    else
+        (&p)->px = (5);
+        (&p)->py = (6);
+
+
+
+/*
+ * 问你自己一个问题：`else` 关键字是属于哪个 `if` 关键字的？
+ *
+ * 如果基于第一段代码，答案可能是显而易见的。`else` 是属于内部的 `if` 关键字的，当检查 `b` 条件为假时，应该会执行 `else` 内的代码。
+ * 但真实情况是，编译报错：`else` without a previous `if`
+ */
+
+/* 这个宏的正确实现如下 */
+#define SET_POINT(p, x, y)  do { (p)->px = (x); (p)->py = (y); } while (0)
+/* 更好的实现 */
+#define SET_POINT(p, x, y)  do {    \
+    (p)->px = (x);                  \
+    (p)->py = (y);                  \
+} while (0)
+
+/* 现在那段代码就会被转换成如下所示 */
+if (a)
+    if (b)
+        do { (&p)->px = (3); (&p)->py = (4); } while (0);
+    else
+        do { (&p)->px = (5); (&p)->py = (6); } while (0);
+
+/* 每一个 `if` 和 `else` 语句都只包含一个内部语句，所以这是有效的 */
+
+/* 最好的做法是使用 `{}` 包含代码 */
+if (a) {
+    if (b) {
+        SET_POINT(&p, 3, 4);
+    } else {
+        SET_POINT(&p, 5, 6);
+    }
+}
+```
+
++ 除了头文件保护和 C++ 检查之外，避免使用 `#ifdef` 和 `#ifndef`，尽量使用 `defined()` 和 `!defined()`。
++ 始终注释 `if/elif/else/endif` 语句。
+
+```C
+/* 正确 */
+#if defined(XYZ)
+/* ... */
+#else /* defined(XYZ) */
+/* ... */
+#endif /* !defined(XYZ) */
+
+/* 错误 */
+#if defined(XYZ)
+/* ... */
+#else
+/* ... */
+#endif
+```
+
++ 不要缩进 `#if` 的子语句。
+
+```C
+/* 正确 */
+#if defined(XYZ)
+#if defined(ABC)
+/* ... */
+#endif /* defined(ABC) */
+#else /* defined(XYZ) */
+/* ... */
+#endif /* !defined(XYZ) */
+
+/* 错误 */
+#if defined(XYZ)
+	#if defined(ABC)
+		/* ... */
+	#endif /* defined(ABC) */
+#else /* defined(XYZ) */
+	/* ... */
+#endif /* !defined(XYZ) */
+```
+
