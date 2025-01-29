@@ -744,3 +744,81 @@ if (condition) {
     CallToFunctionB();
 }
 ```
+
+## `switch` 语句
+
++ 对于每个 `case` 语句，都应该使用一层缩进。
++ 对于 `case` 语句中的内容，也使用一层缩进。
+
+```C
+/* 正确，每一个 case 语句都有一层缩进 */
+/* 正确，case 内的语句都添加一层缩进 */
+switch (check()) {
+    case 0:
+        DoA();
+        break;
+    case 1:
+        DoB();
+        break;
+    default:
+        break;
+}
+
+/* 错误，case 没有缩进 */
+switch (check()) {
+case 0:
+    DoA();
+    break;
+case 1:
+    DoB();
+    break;
+default:
+    break;
+}
+
+/* 错误 */
+switch (check()) {
+    case 0:
+        DoA();
+    break;
+    case 1:
+        DoB();
+    break;
+    default:
+    break;
+}
+```
+
++ 始终包含 `default` 语句。
+
++ 如果需要使用局部变量，使用 `{}` 声明一个代码块，并将 `break` 语句放入其中。
+  + 将左花括号 `{` 与 `case` 放在同一行。
+
+```C
+switch (a) {
+    /* 正确 */
+    case 0: {
+        int32_t a, b;
+        char c;
+        a = 5;
+        /* ... */
+        break;
+    }
+    /* 错误 */
+    case 1:
+    {
+        int32_t a;
+        break;
+    }
+    
+    /* 错误 */
+    case 2: {
+        int32_t a;
+    }
+    break;
+    
+    default:
+        ...
+}
+```
+
