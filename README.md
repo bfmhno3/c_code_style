@@ -5,6 +5,7 @@
 ## 通用规则
 
 + 所有文件始终使用 UTF-8 编码。
++ 每一行字符数不能超过 100，如果代码超过了，则应该换行书写。
 + 使用 `C99` 标准（如果可能的话，使用 `C11` 标准）。
 + 不要使用制表符进行缩进，而是使用空格 ` ` 进行缩进。
 + 每一层缩进使用 4 个空格。
@@ -1317,3 +1318,4 @@ static int32_t prvSum(int32_t a, int32_t b) {
 + [zh-google-styleguide/zh-google-styleguide](https://github.com/zh-google-styleguide/zh-google-styleguide)
 
 + [google/styleguide](https://github.com/google/styleguide)
+
