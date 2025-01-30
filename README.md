@@ -1079,3 +1079,231 @@ const void * vpGetData(const void* in) {
     return in;
 }
 ```
+
+## 头文件和源文件
+
++ 在文件的末尾添加空行。
++ 每个文件必须包含文件的 Doxygen 注释和简短的描述，并在后面添加空行。
+
+```C
+/**
+ * @file            template.h
+ * @brief           Template include file
+ */
+                    /* Here is empty line */
+```
+
++ 每个文件必须包含许可证，使用单个星号。
+
+```C
+/**
+ * @file            template.h
+ * @brief           Template include file
+ */
+
+/*
+ * Copyright (c) year FirstName LASTNAME
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+ * AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * This file is part of library_name.
+ *
+ * Author:          FirstName LASTNAME <optional_email@example.com>
+ */
+```
+
++ 头文件必须包含头文件保护以防止重复包含，防护符的格式为 `<项目>_<路径>_<文件名>_H_`。例如，`foo` 项目中的文件 `foo/src/bar/baz.h` 应该有如下防护：
+
+```C
+#ifndef FOO_BAR_BAZ_H_
+#define FOO_BAR_BAZ_H_
+...
+#endif // FOO_BAR_BAZ_H_
+```
+
++ 头文件需要包含所有需要的其余头文件以保证可以独立编译，如果头文件中包含了源文件需要的头文件，则应该在源文件中再包含一次，以表明其依赖关系。
++ 头文件的包含顺序：配套的头文件、C 语言标准库头文件、第三方库的头文件、本项目的其他头文件。
++ 禁止使用 Unix 的目录别名，例如 `.`（当前目录）、`..`（上级目录）、`~`（家目录）等。
+
+```C
+// google-awsome-project/src/foo/internal/fooserver.c
+// 配套的头文件
+#include "foo/server/fooserver.h"
+
+// C 标准库头文件
+#include <sys/types,h>
+#include <unistd.h>
+
+// 第三方库的头文件
+#include "third_party/absl/flags/flag,h"
+
+// 本项目的其他头文件
+#include "base/basictypes.h"
+#include "foo/server/bar.h"
+```
+
++ 头文件必须包含对 C++ 的检查。
++ 在 C++ 检查之外包含头文件。
++ 在头文件中对需要在外部访问的全局变量使用 `extern` 申明，然后在源文件中定义它们。
+
+```C
+/* file.h ... */
+#ifndef ...
+
+extern int32_t my_variable; /* This is global variable declaration in header */
+
+#endif
+
+/* file.c ... */
+int32_t my_variable;        /* Actually defined in source */
+```
+
++ 禁止在一个 `.c` 文件中包含另外一个 `.c` 文件。
++ 头文件和源文件的代码应按照以下顺序进行：头文件的包含、`typedef` 重命名、宏定义、全局变量（外部变量）、（私有）函数原型、（内联）函数实现。
++ 源文件中，私有函数实现放在文件最后。
+
+头文件示例：
+
+```C
+/**
+ * @file            template.h
+ * @brief           Template include file
+ */
+
+/*
+ * Copyright (c) year FirstName LASTNAME
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+ * AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * This file is part of library_name.
+ *
+ * Author:          FirstName LASTNAME <optional_email@example.com>
+ */
+
+#ifndef TEMPLATE_HDR_H
+#define TEMPLATE_HDR_H
+
+/* 头文件的包含 */
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+/* typedef 重命名 */
+
+/* 宏定义 */
+
+/* 外部变量 */
+    
+/* 函数原型 */
+
+/* 内联函数实现 */
+    
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* TEMPLATE_HDR_H */
+```
+
+源文件示例：
+
+```C
+/**
+ * @file            template.c
+ * @brief           Template source file
+ */
+
+/*
+ * Copyright (c) year FirstName LASTNAME
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+ * AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * This file is part of library_name.
+ *
+ * Author:          FirstName LASTNAME <optional_email@example.com>
+ */
+
+/* 头文件包含 */
+/* 注意头文件包含的顺序 */
+#include "template.h"
+
+#include <stdbool.h>
+
+/* typedef 重命名 */
+typedef int int32_t;
+
+/* 宏定义 */
+#define PI 3.14159
+
+/* 全局变量 */
+int count; /* 全局变量不初始化 */
+
+/* 私有函数原型 */
+static int32_t prvSum(int32_t a, int32_t b);
+
+/* 函数实现 */
+bool bIsTrue(bool flag) {
+    return flag;
+}
+
+/* 私有函数实现放在最后 */
+static int32_t prvSum(int32_t a, int32_t b) {
+    return a + b;
+}
+```
+
