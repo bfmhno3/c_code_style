@@ -1311,3 +1311,9 @@ static int32_t prvSum(int32_t a, int32_t b) {
 }
 ```
 
+## 参考资料
+
++ [MaJerle/c-code-style](https://github.com/MaJerle/c-code-style)
++ [zh-google-styleguide/zh-google-styleguide](https://github.com/zh-google-styleguide/zh-google-styleguide)
+
++ [google/styleguide](https://github.com/google/styleguide)
